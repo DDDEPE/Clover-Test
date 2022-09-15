@@ -1,0 +1,1337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="test">
+
+    <!--  법인차량 등록 조회 테스트 _ 다정 -->
+    <select id="S_GA_CORP_VEHICLE_KDJ" parameterType="hashmap" resultType="hashmap">
+        SELECT
+        gcvk.GA_CORP_VEHICLE_KDJ_ID
+        , gcvk.COMM_CORPORATION_ID
+        , gcvk.VEHICLE_NO
+        , to_char(gcvk.RECEIVE_DATE, 'YYYY-MM-DD') AS RECEIVE_DATE
+        , gcvk.OWN_DIVISION_CODE
+        , gcvk.MANAGE_DEPARTMENT_ID AS MANAGE_DEPT_CODE
+        , HR_UTIL_PKG.date_hr_dept_name(gcvk.MANAGE_USER_ID, gcvk.CRTDT) AS MANAGE_DEPT_NAME
+        , gcvk.MAKER
+        , gcvk.RECEIVE_COST
+        , gcvk.RENT_DIVISION_CODE
+        , gcvk.MANAGE_USER_ID AS MANAGE_HR_EMPLOYEE_MASTER_ID
+        , HR_UTIL_PKG.emp_name(gcvk.MANAGE_USER_ID) AS MANAGE_EMP_NAME
+        , gcvk.MODEL
+        , to_char(gcvk.DISPOSAL_DATE, 'YYYY-MM-DD') AS DISPOSAL_DATE
+        , gcvk.WORK_DIVISION_CODE
+        , gcvk.USE_DEPARTMENT_ID AS DEPT_CODE
+        , HR_UTIL_PKG.date_hr_dept_name(gcvk.DRIVE_USER_ID, gcvk.CRTDT) AS DEPT_NAME
+        , gcvk.VEHICLE_YEAR
+        , gcvk.CC
+        , to_char(gcvk.INSPECTION_DATE, 'YYYY-MM-DD') AS INSPECTION_DATE
+        , gcvk.USE_TYPE_CODE
+        , gcvk.DRIVE_USER_ID AS HR_EMPLOYEE_MASTER_ID
+        , HR_UTIL_PKG.emp_name(gcvk.DRIVE_USER_ID) AS EMP_NAME
+        , gcvk.FUEL_DIVISION_CODE
+        , gcvk.KM_H
+        , gcvk.COMM_BUSINESS_ID
+        , gcvk.WORK_USE_YN
+        , gcvk.USE_YN
+        , gcvk.CREATE_CHANNEL_CODE
+        , COMM_UTIL_PKG.user_name(#{login_id}) AS CRDTBY_NAME
+        , gcvk.AA_ASSET_ID
+        , a.ASSET_NO
+        , a.ASSET_NAME AS AA_ASSET_NAME
+        , COMM_UTIL_PKG.wrk_code_name(#{corporation_id}, 'aa003', a.asset_state_code) AS AA_ASSET_STATE
+        , FI_UTIL_PKG.invoice_no(a.FI_INVOICE_HEADER_ID) AS INVOICE_NO
+        , COMM_UTIL_PKG.wrk_code_name(#{corporation_id}, 'aa001', b.REPAYMENT_CODE) AS REPAYMENT_CODE
+        , b.SERVICE_LIFE
+        , b.REPAYMENT_RATE
+        FROM GA_CORP_VEHICLE_KDJ gcvk
+        LEFT JOIN AA_ASSET a ON gcvk.AA_ASSET_ID = a.AA_ASSET_ID
+        LEFT JOIN AA_BI_CATEGORY_MASTER b ON a.AA_BI_CATEGORY_MASTER_ID = b.AA_BI_CATEGORY_MASTER_ID
+        WHERE 1=1
+        <if test="v_ga_corp_vehicle_no != null and v_ga_corp_vehicle_no != '' and v_ga_corp_vehicle_no != '%'.toString()">
+            AND gcvk.VEHICLE_NO = #{v_ga_corp_vehicle_no}
+        </if>
+    </select>
+
+    <!-- 법인차량 등록 신규 등록 테스트 _ 다정 -->
+    <insert id="I_GA_CORP_VEHICLE_KDJ_PROC" parameterType="hashmap">
+        INSERT INTO ga_corp_vehicle_kdj (
+                                          GA_CORP_VEHICLE_KDJ_ID
+                                        , COMM_CORPORATION_ID
+                                        , VEHICLE_NO
+                                        , MAKER
+                                        , MODEL
+                                        , VEHICLE_YEAR
+                                        , CC
+                                        , KM_H
+                                        , FUEL_DIVISION_CODE
+                                        , RECEIVE_DATE
+                                        , RECEIVE_COST
+                                        , DISPOSAL_DATE
+                                        , INSPECTION_DATE
+                                        , COMM_BUSINESS_ID
+                                        , OWN_DIVISION_CODE
+                                        , RENT_DIVISION_CODE
+                                        , WORK_DIVISION_CODE
+                                        , USE_TYPE_CODE
+                                        , WORK_USE_YN
+                                        , USE_YN
+                                        , MANAGE_DEPARTMENT_ID
+                                        , MANAGE_USER_ID
+                                        , USE_DEPARTMENT_ID
+                                        , DRIVE_USER_ID
+                                        , CREATE_CHANNEL_CODE
+                                        , AA_ASSET_ID
+                                        , CRTBY
+                                        , CRTDT
+                                        , CRTIP
+        ) VALUES (
+                     GA_CORP_VEHICLE_KDJ_S.nextval
+                 , #{COMM_CORPORATION_ID}
+                 , #{VEHICLE_NO}
+                 , #{MAKER}
+                 , #{MODEL}
+                 , #{VEHICLE_YEAR}
+                 , #{CC}
+                 , #{KM_H}
+                 , #{FUEL_DIVISION_CODE}
+                 , #{RECEIVE_DATE}
+                 , #{RECEIVE_COST}
+                 , #{DISPOSAL_DATE}
+                 , #{INSPECTION_DATE}
+                 , #{COMM_BUSINESS_ID}
+                 , #{OWN_DIVISION_CODE}
+                 , #{RENT_DIVISION_CODE}
+                 , #{WORK_DIVISION_CODE}
+                 , #{USE_TYPE_CODE}
+                 , #{WORK_USE_YN}
+                 , #{USE_YN}
+                 , #{MANAGE_DEPT_CODE}
+                 , #{MANAGE_HR_EMPLOYEE_MASTER_ID}
+                 , #{DEPT_CODE}
+                 , #{HR_EMPLOYEE_MASTER_ID}
+                 , #{CREATE_CHANNEL_CODE}
+                 , #{AA_ASSET_ID}
+                 , #{CRTBY}
+                 , SYSDATE
+                 , #{CRTIP}
+                 )
+    </insert>
+
+    <!--  법인차량 등록 _ 수정 테스트 _ 다정	-->
+    <update id="U_GA_CORP_VEHICLE_KDJ_PROC" parameterType="hashmap">
+        UPDATE GA_CORP_VEHICLE_KDJ
+        SET RECEIVE_DATE = #{RECEIVE_DATE}
+          , OWN_DIVISION_CODE = #{OWN_DIVISION_CODE}
+          , MANAGE_DEPARTMENT_ID = #{MANAGE_DEPT_CODE}
+          , MAKER = #{MAKER}
+          , RECEIVE_COST = #{RECEIVE_COST}
+          , RENT_DIVISION_CODE = #{RENT_DIVISION_CODE}
+          , MANAGE_USER_ID = #{MANAGE_HR_EMPLOYEE_MASTER_ID}
+          , MODEL = #{MODEL}
+          , DISPOSAL_DATE = #{DISPOSAL_DATE}
+          , WORK_DIVISION_CODE = #{WORK_DIVISION_CODE}
+          , USE_DEPARTMENT_ID = #{DEPT_CODE}
+          , VEHICLE_YEAR = #{VEHICLE_YEAR}
+          , CC = #{CC}
+          , INSPECTION_DATE = #{INSPECTION_DATE}
+          , USE_TYPE_CODE = #{USE_TYPE_CODE}
+          , DRIVE_USER_ID = #{HR_EMPLOYEE_MASTER_ID}
+          , FUEL_DIVISION_CODE = #{FUEL_DIVISION_CODE}
+          , KM_H = #{KM_H}
+          , COMM_BUSINESS_ID = #{COMM_BUSINESS_ID}
+          , WORK_USE_YN = #{WORK_USE_YN}
+          , CREATE_CHANNEL_CODE = #{CREATE_CHANNEL_CODE}
+          , USE_YN = #{USE_YN}
+          , AA_ASSET_ID = #{AA_ASSET_ID}
+          , AMNBY = #{AMNBY}
+          , AMNDT = SYSDATE
+          , AMNIP = #{AMNIP}
+        WHERE GA_CORP_VEHICLE_KDJ_ID = ${GA_CORP_VEHICLE_KDJ_ID}
+    </update>
+    
+    <!-- ******************************************* -->
+	<!-- 법인카드등록									 -->
+	<!-- ******************************************* -->
+	<select id="S_TR_BI_CORP_CARD_SHM" parameterType="hashmap" statementType="CALLABLE" resultType="hashmap">
+	 select tbcc.tr_bi_corp_card_shm_id
+	       ,tbcc.comm_corporation_id
+	       ,tbcc.fi_bi_division_id
+	       ,tbcc.card_company_code
+	       ,tbcc.card_company_name
+	       ,tbcc.card_no
+	       ,REGEXP_REPLACE(tbcc.card_no, '(.{4})(.{4})(.{4})(.{4})', '\1-\2-\3-\4')			as card_no_masking
+	       ,tbcc.member_name
+	       ,tbcc.member_name_en
+	       ,tbcc.card_type_code
+	       ,tbcc.name_division_code
+	       ,tbcc.card_name
+	       ,tbcc.validity
+	       ,tbcc.fi_bi_term_id
+	       ,fi_util_pkg.term_code(tbcc.fi_bi_term_id)		as fi_bi_term_code
+	       ,fi_util_pkg.term_name(tbcc.fi_bi_term_id)		as fi_bi_term_name
+	       ,tbcc.pay_day
+	       ,tbcc.tr_bi_bank_account_id
+	       ,tr_util_pkg.bank_name(tbcc.tr_bi_bank_account_id, #{v_lang_code})	as bank_name
+	       ,tr_util_pkg.bank_account_no(tbcc.tr_bi_bank_account_id)				as tr_bi_bank_account_no
+	       ,tbcc.issue_date
+	       ,tbcc.cancel_date
+	       ,tbcc.pay_cv_id
+	       ,comm_util_pkg.cv_no(tbcc.pay_cv_id)								as pay_cv_code
+	       ,comm_util_pkg.cv_name(tbcc.pay_cv_id, #{v_lang_code})			as pay_cv_name
+	       ,tbcc.hr_department_id
+	       ,comm_util_pkg.dept_code(tbcc.hr_department_id)					as hr_department_code
+	       ,hr_util_pkg.dept_name(tbcc.hr_department_id, #{v_lang_code})	as hr_department_name
+	       ,tbcc.FI_BI_COST_CENTER_ID
+	       ,fi_util_pkg.cost_center_name(tbcc.FI_BI_COST_CENTER_ID
+	       								,#{v_lang_code})					as FI_BI_COST_CENTER_NAME
+	       ,tbcc.employee_id
+	       ,hr_util_pkg.emp_no(tbcc.employee_id)							as employee_no
+	       ,hr_util_pkg.emp_name(tbcc.employee_id, #{v_lang_code})			as employee_name
+	       ,tbcc.use_yn
+	       ,tbcc.tr_bi_fund_id
+	       ,tr_util_pkg.fund_code(tbcc.tr_bi_fund_id)            			as tr_bi_fund_code
+           ,tr_util_pkg.fund_name(tbcc.tr_bi_fund_id, #{v_lang_code})       as tr_bi_fund_name
+	       ,tbcc.attribute1
+	       ,tbcc.attribute2
+	       ,tbcc.attribute3
+	       ,tbcc.attribute4
+	       ,tbcc.attribute5
+	       ,tbcc.attribute6
+	       ,tbcc.attribute7
+	       ,tbcc.attribute8
+	       ,tbcc.attribute9
+	       ,tbcc.attribute10
+	       ,comm_util_pkg.user_name(tbcc.crtby)			as crtby
+           ,tbcc.crtdt
+           ,tbcc.crtip
+           ,comm_util_pkg.user_name(tbcc.amnby)			as amnby
+           ,tbcc.amndt
+	       ,tbcc.amnip
+		   ,NVL((SELECT max(corp_card_yn)
+		           FROM comm_cv_bank
+		          WHERE comm_cv_id = tbcc.pay_cv_id),0) AS CORP_CARD_YN
+		from tr_bi_corp_card_shm tbcc
+	  where 1=1
+	    and tbcc.comm_corporation_id = #{v_corporation_id}
+		and tbcc.fi_bi_division_id = #{v_fi_bi_division_id}
+	  <if test="v_card_company_code != null and v_card_company_code != '' and v_card_company_code != '%'.toString()">
+    	and tbcc.card_company_code = #{v_card_company_code}
+  	  </if>
+	  <if test="v_card_no != null and v_card_no != '' and v_card_no != '%'.toString()">
+    	and tbcc.card_no like '%' || #{v_card_no} || '%'
+  	  </if>
+	  <if test="v_member_name != null and v_member_name != '' and v_member_name != '%'.toString()">
+	  	and tbcc.member_name like '%' || #{v_member_name} || '%'
+	  </if>
+	  <if test="v_use_yn != null and v_use_yn != '' and v_use_yn != '%'.toString()">
+		and tbcc.use_yn = #{v_use_yn}
+	  </if>
+	  <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(v_comm_cv_id)">
+	    and tbcc.pay_cv_id = #{v_comm_cv_id}
+	  </if>
+	  order by tbcc.card_no asc
+	</select>
+
+    <!--  법인차량 등록 _ 운행일지 조회 테스트 _ 다정	-->
+    <select id="S_GA_VEHICLE_LOG_KDJ" parameterType="hashmap" resultType="hashmap">
+        SELECT
+            GA_VEHICLE_LOG_KDJ_ID
+             , GA_CORP_VEHICLE_KDJ_ID
+             , HR_EMPLOYEE_MASTER_ID
+             , VEHICLE_NO
+             , DRIVE_DATE
+             , HR_UTIL_PKG.emp_name(HR_EMPLOYEE_MASTER_ID) AS EMP_NAME
+             , START_POINT
+             , BEFORE_DISTANCE
+             , END_POINT
+             , AFTER_DISTANCE
+             , DRIVE_DISTANCE
+             , NOTE
+        FROM GA_VEHICLE_LOG_KDJ
+        WHERE GA_CORP_VEHICLE_KDJ_ID = #{v_ga_corp_vehicle_id}
+    </select>
+
+    <!--  법인차량 등록 _ 삭제 테스트 _ 다정	-->
+    <delete id="D_GA_CORP_VEHICLE_KDJ_PROC" parameterType="hashmap">
+        DELETE FROM GA_CORP_VEHICLE_KDJ WHERE GA_CORP_VEHICLE_KDJ_ID = #{GA_CORP_VEHICLE_KDJ_ID}
+    </delete>
+
+    <!--  법인차량 등록 _ 보험이력 조회 테스트 _ 다정	-->
+    <select id="S_GA_DRIVE_INS_KDJ" parameterType="hashmap" resultType="hashmap">
+        SELECT
+            GA_DRIVE_INS_KDJ_ID
+             , GA_CORP_VEHICLE_KDJ_ID
+             , FROM_DATE
+             , TO_DATE
+             , INS_COMP
+             , INS_AMT
+             , CONTACT
+             , NOTE
+             , CRTBY
+             , CRTDT
+             , CRTIP
+        FROM GA_DRIVE_INS_KDJ
+        WHERE GA_CORP_VEHICLE_KDJ_ID = #{v_ga_corp_vehicle_id}
+    </select>
+
+    
+    <!--  법인차량 등록 _ 수리내역 조회 테스트 _ 다정	-->
+    <select id="S_GA_DRIVE_REP_KDJ" parameterType="hashmap" resultType="hashmap">
+        SELECT
+            GA_DRIVE_REP_KDJ_ID
+             , GA_CORP_VEHICLE_KDJ_ID
+             , REP_DATE
+             , REP_COMP
+             , REP_AMT
+             , CONTENTS
+        FROM GA_DRIVE_REP_KDJ
+        WHERE GA_CORP_VEHICLE_KDJ_ID = #{v_ga_corp_vehicle_id}
+    </select>
+
+    <!--  법인차량 등록 _ 운행일지 저장 테스트 _ 다정	-->
+    <insert id="I_GA_VEHICLE_LOG_KDJ_PROC" parameterType="hashmap">
+        INSERT INTO GA_VEHICLE_LOG_KDJ (
+                                         GA_VEHICLE_LOG_KDJ_ID
+                                       , GA_CORP_VEHICLE_KDJ_ID
+                                       , VEHICLE_NO
+                                       , DRIVE_DATE
+                                       , HR_EMPLOYEE_MASTER_ID
+                                       , START_POINT
+                                       , BEFORE_DISTANCE
+                                       , END_POINT
+                                       , AFTER_DISTANCE
+                                       , DRIVE_DISTANCE
+                                       , NOTE
+                                       , CRTBY
+                                       , CRTDT
+                                       , CRTIP
+        )
+        VALUES(
+                  GA_VEHICLE_LOG_KDJ_S.nextval
+              , #{GA_CORP_VEHICLE_KDJ_ID}
+              , #{VEHICLE_NO}
+              , #{DRIVE_DATE}
+              , #{HR_EMPLOYEE_MASTER_ID}
+              , #{START_POINT}
+              , #{BEFORE_DISTANCE}
+              , #{END_POINT}
+              , #{AFTER_DISTANCE}
+              , #{DRIVE_DISTANCE}
+              , #{NOTE}
+              , #{CRTBY}
+              , SYSDATE
+              , #{CRTDT}
+              )
+    </insert>
+
+    <!--  법인차량 등록 _ 운행일지 업데이트 테스트 _ 다정	-->
+    <update id="U_GA_VEHICLE_LOG_KDJ_PROC" parameterType="hashmap">
+        UPDATE GA_VEHICLE_LOG_KDJ
+        SET DRIVE_DATE = #{DRIVE_DATE}
+          , HR_EMPLOYEE_MASTER_ID = #{HR_EMPLOYEE_MASTER_ID}
+          , START_POINT = #{START_POINT}
+          , BEFORE_DISTANCE = #{BEFORE_DISTANCE}
+          , END_POINT = #{END_POINT}
+          , AFTER_DISTANCE = #{AFTER_DISTANCE}
+          , DRIVE_DISTANCE = #{DRIVE_DISTANCE}
+          , NOTE = #{NOTE}
+          , AMNBY = #{AMNBY}
+          , AMNDT = SYSDATE
+          , AMNIP = #{AMNIP}
+        WHERE ga_vehicle_log_kdj_id = #{GA_VEHICLE_LOG_KDJ_ID}
+    </update>
+
+    <!--  법인차량 등록 _ 사진정보 추가 테스트 _ 다정	-->
+    <insert id="I_GA_DRIVE_PIC_KDJ_PROC" parameterType="hashmap">
+        INSERT INTO GA_DRIVE_PIC_KDJ (
+                                       ga_drive_pic_kdj_id
+                                     , ga_corp_vehicle_kdj_id
+                                     , picture1
+                                     , picture2
+                                     , picture3
+                                     , crtby
+                                     , crtdt
+                                     , crtip
+        ) VALUES (
+                     ga_drive_pic_kdj_s.nextval
+                 , #{GA_CORP_VEHICLE_KDJ_ID}
+                 , #{PICTURE1,jdbcType=BLOB}
+                 , #{PICTURE2,jdbcType=BLOB}
+                 , #{PICTURE3,jdbcType=BLOB}
+                 , #{CRTBY}
+                 , SYSDATE
+                 , #{CRTIP}
+                 )
+    </insert>
+
+    <!--  법인차량 등록 _ 사진등록 수정 테스트 _ 다정	-->
+    <update id="U_GA_DRIVE_PIC_KDJ_PROC" parameterType="hashmap">
+        UPDATE ga_drive_pic_kdj
+        SET picture1 = #{PICTURE1,jdbcType=BLOB}
+          , picture2 = #{PICTURE2,jdbcType=BLOB}
+          , picture3 = #{PICTURE3,jdbcType=BLOB}
+        WHERE ga_drive_pic_kdj_id = #{v_ga_drive_pic_kdj_id}
+    </update>
+
+    <!--  법인차량 등록 _ 사진등록 조회 테스트 _ 다정	-->
+    <select id="S_GA_DRIVE_PIC_KDJ" parameterType="hashmap" resultMap="config.vehicleImg">
+        SELECT GA_DRIVE_PIC_KDJ_ID
+             ,PICTURE1
+             ,PICTURE2
+             ,PICTURE3
+        FROM GA_DRIVE_PIC_KDJ
+        WHERE GA_CORP_VEHICLE_KDJ_ID = #{v_ga_corp_vehicle_id}
+    </select>
+
+    <!--  법인차량 등록 _ 사진등록 조회 테스트 _ 다정 _ BLOB_IMAGE_ID 관련	-->
+    <!--	<select id="SELECT_GA_DRIVE_PIC_KDJ" parameterType="hashmap" resultType="hashmap">-->
+    <!--		SELECT PHOTO1 AS IMAGE1-->
+    <!--			 , PHOTO2 AS IMAGE2-->
+    <!--			 , PHOTO3 AS IMAGE3-->
+    <!--		FROM GA_CAR_MASTER-->
+    <!--		WHERE CAR_MASTER_ID = #{BLOB_IMAGE_ID}-->
+    <!--	</select>-->
+
+    <!--  법인차량 조회 _ 조회 테스트 _ 다정	-->
+    <select id="S_GA_CORP_VEHICLE_LIST_KDJ" parameterType="hashMap" resultType="hashMap">
+        SELECT
+        gcvk.GA_CORP_VEHICLE_KDJ_ID
+        , gcvk.VEHICLE_NO
+        , gcvk.MAKER
+        , gcvk.MODEL
+        , gcvk.FUEL_DIVISION_CODE
+        , gcvk.RECEIVE_DATE
+        , gcvk.RECEIVE_COST
+        , gcvk.INSPECTION_DATE
+        , COMM_UTIL_PKG.business_name(gcvk.COMM_BUSINESS_ID) AS COMM_BUSINESS_NAME
+        , gcvk.OWN_DIVISION_CODE
+        , gcvk.RENT_DIVISION_CODE
+        , gcvk.WORK_DIVISION_CODE
+        , gcvk.USE_TYPE_CODE
+        , gcvk.USE_YN
+        , HR_UTIL_PKG.dept_name(COMM_UTIL_PKG.dept_code(gcvk.MANAGE_DEPARTMENT_ID)) AS MANAGE_DEPT_NAME
+        , HR_UTIL_PKG.emp_name(gcvk.MANAGE_USER_ID) AS MANAGE_EMP_NAME
+        , HR_UTIL_PKG.dept_name(COMM_UTIL_PKG.dept_code(gcvk.USE_DEPARTMENT_ID)) AS DEPT_NAME
+        , HR_UTIL_PKG.emp_name(gcvk.DRIVE_USER_ID) AS EMP_NAME
+        , AA_UTIL_PKG.asset_name(gcvk.AA_ASSET_ID) AS AA_ASSET_NAME
+        , gcvk.AA_ASSET_ID
+        , gcvk.COMM_BUSINESS_ID
+        , gcvk.MANAGE_DEPARTMENT_ID
+        , gcvk.USE_DEPARTMENT_ID
+        FROM GA_CORP_VEHICLE_KDJ gcvk
+        WHERE 1=1
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(v_vehicle_no)">
+            AND gcvk.VEHICLE_NO like '%' || #{v_vehicle_no} || '%'
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(v_manage_dept)">
+            AND gcvk.MANAGE_DEPARTMENT_ID = #{v_manage_dept}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(v_use_dept)">
+            AND gcvk.USE_DEPARTMENT_ID = #{v_use_dept}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(v_own)">
+            AND gcvk.OWN_DIVISION_CODE = #{v_own}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(v_use)">
+            AND gcvk.USE_YN = #{v_use}
+        </if>
+        ORDER BY gcvk.GA_CORP_VEHICLE_KDJ_ID DESC
+    </select>
+    
+ 	<!-- ******************************************************* -->
+	<!--  명함신청내역(GA_BUSINESS_CARD_APPLY_SHM.jsp)  -->
+	<!-- ******************************************************* -->
+	<insert id="I_GA_BUSINESS_CARD_APPLY_SHM" parameterType="hashmap">
+		<selectKey resultType="hashmap" keyProperty="seq" order="BEFORE">
+			SELECT GA_BUSINESS_CARD_APPLY_SHM_S.NEXTVAL as "seq" FROM DUAL
+		</selectKey>
+		insert into GA_BUSINESS_CARD_APPLY_SHM(
+		GA_BUSINESS_CARD_APPLY_SHM_ID
+		,EA_DOC_ID
+		,HR_EMPLOYEE_MASTER_ID
+		,EMP_NAME
+		,DEPT_NAME
+		,POSITION_NAME
+		,DUTY_NAME
+		,EXTENSION_NO
+		,EMAIL
+		,PHONE
+		,ADDR
+	    ,ENG_YN
+	    ,EMP_NAME_EN
+	    ,DEPT_NAME_EN
+	    ,POSITION_NAME_EN
+	    ,DUTY_NAME_EN
+	    ,EXTENSION_NO_EN
+	    ,EMAIL_EN
+	    ,PHONE_EN
+	    ,ADDR_EN
+		,CRTBY
+		,CRTDT
+		,CRTIP
+		)values(
+		#{seq}
+		,#{EA_DOC_ID}
+		,#{HR_EMPLOYEE_MASTER_ID}
+		,#{EMP_NAME}
+		,#{DEPT_NAME}
+		,#{POSITION_NAME}
+		,#{DUTY_NAME}
+		,#{EXTENSION_NO}
+		,#{EMAIL}
+		,#{PHONE}
+		,#{ADDR}
+		,#{ENG_YN}
+		,#{EMP_NAME_EN}
+		,#{DEPT_NAME_EN}
+		,#{POSITION_NAME_EN}
+		,#{DUTY_NAME_EN}
+		,#{EXTENSION_NO_EN}
+		,#{EMAIL_EN}
+		,#{PHONE_EN}
+		,#{ADDR_EN}
+		,#{login_user_id}
+		,SYSDATE
+		,#{login_user_ip}
+		)
+	</insert>
+	<select id="S_GA_BUSINESS_CARD_APPLY_SHM" parameterType="hashmap" resultType="hashmap">
+		SELECT a.GA_BUSINESS_CARD_APPLY_SHM_id
+			 ,a.ea_doc_id
+			 ,a.emp_name
+			 ,a.dept_name
+			 ,a.position_name
+			 ,a.duty_name
+			 ,a.extension_no
+			 ,a.email
+			 ,a.phone
+			 ,a.addr
+			 ,a.eng_yn
+			 ,a.emp_name_en
+			 ,a.dept_name_en
+			 ,a.position_name_en
+			 ,a.duty_name_en
+			 ,a.extension_no_en
+			 ,a.email_en
+			 ,a.phone_en
+			 ,a.addr_en
+			 ,a.hr_employee_master_id
+			 ,HR_UTIL_PKG.nickname(a.hr_employee_master_id) as NICKNAME
+			 ,a.crtdt
+			 ,b.doc_no
+		FROM GA_BUSINESS_CARD_APPLY_SHM a
+				 LEFT JOIN ea_doc b ON a.ea_doc_id = b.ea_doc_id
+		WHERE 1 = 1
+		<if test="DOC_NO != null and DOC_NO != '' and DOC_NO != '%'.toString()">
+			AND (instr(upper(b.doc_no), upper(#{DOC_NO}), 1)) > 0
+		</if>
+		<if test="v_emp_no != null and v_emp_no != '' and v_emp_no != '%'.toString()">
+			AND a.hr_employee_master_id = #{v_emp_no}
+		</if>
+		<if test="v_dept_cd != null and v_dept_cd != '' and v_dept_cd != '%'.toString()">
+			AND hr_util_pkg.date_hr_dept_code(a.hr_employee_master_id,sysdate) = #{v_dept_cd}
+		</if>
+		<if test="fr_date != null and fr_date != '' and fr_date != '%'.toString()">
+			<![CDATA[
+            and  TO_NUMBER(to_char(a.crtdt,'yyyymmdd')) >= TO_NUMBER(#{fr_date})
+            ]]>
+		</if>
+		<if test="to_date != null and to_date != '' and to_date != '%'.toString()">
+			<![CDATA[
+            and TO_NUMBER(to_char(a.crtdt,'yyyymmdd')) <= TO_NUMBER(#{to_date})
+            ]]>
+		</if>
+		<if test="v_nickname != null and v_nickname != '' and v_nickname != '%'.toString()">
+   			AND ('%' || #{v_nickname} || '%' IS NULL OR HR_UTIL_PKG.nickname(a.hr_employee_master_id) LIKE '%' || #{v_nickname} || '%')
+		</if>
+		
+		ORDER BY a.GA_BUSINESS_CARD_APPLY_SHM_id
+	</select>
+		<select id="S_GA_BUSINESS_CARD_APPLY_SHM_20220713" parameterType="hashmap" resultType="hashmap">
+		SELECT a.TEST_START_DATE
+			 ,a.TEST_END_DATE
+			 ,a.TEST_CARD_EMPLOYEE
+			 ,a.TEST_APPLY_NUM
+			 ,a.TEST_EMPLOYEE_EMAIL
+			 ,a.TEST_EMPLOYEE_ADDRESS
+			 ,a.TEST_EMPLOYEE_PHONE
+		FROM GA_BUSINESS_CARD_APPLY_SHM_20220713 a
+		WHERE 1 = 1
+		
+		ORDER BY a.GA_BUSINESS_CARD_APPLY_SHM_20220713_id
+	</select>
+    <!-- 거래처등록_소진 -->
+    <insert id="I_COMM_CV_PSJ_PROC" parameterType="hashmap">
+        <selectKey resultType="string" keyProperty="seq_pk" order="BEFORE">
+            SELECT COMM_CV_PSJ_S.NEXTVAL FROM DUAL
+        </selectKey>
+        BEGIN
+        INSERT INTO COMM_CV_PSJ (
+        COMM_CV_PSJ_ID
+        ,COMM_CORPORATION_ID
+        ,CV_NO
+        ,CV_NAME
+        ,CV_NAME_ABBR
+        ,CV_NAME_EN
+        ,CV_TYPE_CODE
+        ,BUSINESS_NO
+        ,REPRESENTATIVE
+        ,BUSINESS_TYPE
+        ,BUSINESS_ITEM
+        ,NATION_CODE
+        ,ESTABLISHMENT_NO
+        ,USE_YN
+        ,TEL
+        ,FAX
+        ,HOMEPAGE
+        ,POST_NO
+        ,ADDRESS
+        ,PURCHASE_YN
+        ,PURCHASE_TAX_CODE
+        ,PURCHASE_TERMS_ID
+        ,SALES_YN
+        ,SALES_TAX_CODE
+        ,SALES_TERMS_ID
+        ,OLD_CV_CODE
+        ,HR_EMPLOYEE_MASTER_ID
+        ,IMPORTANCE_CODE
+        ,START_DATE
+        ,END_DATE
+        ,CREDIT_GRADE_CODE
+        ,CV_SIZE
+        ,TAX_NO
+        ,SALES_AMOUNT
+        ,EMP_COUNT
+        ,ITEMS
+        ,DESCRIPTION
+        ,ATTRIBUTE1
+        ,REVERSE_YN
+        ,EXTRA_SYS_YN
+        ,UP_COMM_CV_PSJ_ID)
+        VALUES (
+        #{seq_pk}
+        ,#{COMM_CORPORATION_ID}
+        ,COMM_AUTONUM_PKG.GETAUTOCODE('COMM_CV', 'CV_NO', #{COMM_CORPORATION_ID})
+        ,#{CV_NAME}
+        ,#{CV_NAME_ABBR}
+        ,#{CV_NAME_EN}
+        ,#{CV_TYPE_CODE}
+        ,REPLACE(#{BUSINESS_NO}, '-', '')
+        ,#{REPRESENTATIVE}
+        ,#{BUSINESS_TYPE}
+        ,#{BUSINESS_ITEM}
+        ,#{NATION_CODE}
+        ,#{ESTABLISHMENT_NO}
+        ,#{USE_YN}
+        ,#{TEL}
+        ,#{FAX}
+        ,#{HOMEPAGE}
+        ,#{POST_NO}
+        ,#{ADDRESS}
+        ,#{PURCHASE_YN}
+        ,#{PURCHASE_TAX_CODE}
+        ,#{PURCHASE_TERMS_ID}
+        ,#{SALES_YN}
+        ,#{SALES_TAX_CODE}
+        ,#{SALES_TERMS_ID}
+        ,#{OLD_CV_CODE}
+        ,#{HR_EMPLOYEE_MASTER_ID}
+        ,#{IMPORTANCE_CODE}
+        ,#{START_DATE}
+        ,#{END_DATE}
+        ,#{CREDIT_GRADE_CODE}
+        ,#{CV_SIZE}
+        ,#{TAX_NO}
+        ,#{SALES_AMOUNT}
+        ,#{EMP_COUNT}
+        ,#{ITEMS}
+        ,#{DESCRIPTION}
+        ,#{ATTRIBUTE1}
+        ,#{REVERSE_YN}
+        ,#{EXTRA_SYS_YN}
+        ,#{UP_COMM_CV_PSJ_ID});
+
+        INSERT INTO comm_cv_revision_psj
+        (comm_cv_revision_psj_id
+        ,comm_cv_psj_id
+        ,seq
+        ,revision_date
+        ,r_cv_name
+        ,r_cv_name_abbr
+        ,r_business_no
+        ,r_representative
+        ,r_business_type
+        ,r_business_item
+        ,r_post_no
+        ,r_address
+        ,description
+        ,purchase_tax_code
+        ,cv_type_code
+        ,crtby
+        ,crtdt
+        ,crtip
+        ,amnby
+        ,amndt
+        ,amnip)
+        VALUES
+        (comm_cv_revision_psj_s.nextval
+        ,#{seq_pk}
+        ,'1'
+        ,SYSDATE
+        ,#{CV_NAME}
+        ,#{CV_NAME_ABBR}
+        ,replace(#{BUSINESS_NO}, '-', '')
+        ,#{REPRESENTATIVE}
+        ,#{BUSINESS_TYPE}
+        ,#{BUSINESS_ITEM}
+        ,#{POST_NO}
+        ,#{ADDRESS}
+        ,comm_util_pkg.dic_lang('최초등록')
+        ,#{PURCHASE_TAX_CODE}
+        ,#{CV_TYPE_CODE}
+        ,#{CRTBY}
+        ,SYSDATE
+        ,#{CRTIP}
+        ,#{AMNBY}
+        ,SYSDATE
+        ,#{AMNIP});
+        END;
+    </insert>
+
+    <select id="S_COMM_CV_PSJ" parameterType="hashmap" resultType="hashmap">
+        SELECT
+        COMM_CV_PSJ_ID
+        ,COMM_CORPORATION_ID
+        ,CV_NO
+        ,CV_NAME
+        ,CV_NAME_ABBR
+        ,CV_NAME_EN
+        ,comm_util_pkg.wrk_code_name(#{v_corporation_id}
+        ,'comm000',CV_TYPE_CODE,'KO') as CV_TYPE_CODE
+        <!--,CV_TYPE_CODE as CV_TYPE_NAME -->
+        ,BUSINESS_NO
+        ,REPRESENTATIVE
+        ,BUSINESS_TYPE
+        ,BUSINESS_ITEM
+        ,NATION_CODE
+        ,ESTABLISHMENT_NO
+        ,USE_YN
+        ,TEL
+        ,FAX
+        ,HOMEPAGE
+        ,POST_NO
+        ,ADDRESS
+        ,PURCHASE_YN
+        ,PURCHASE_TAX_CODE
+        ,PURCHASE_TERMS_ID
+        ,SALES_YN
+        ,SALES_TAX_CODE
+        ,SALES_TERMS_ID
+        ,OLD_CV_CODE
+        ,HR_EMPLOYEE_MASTER_ID
+        ,IMPORTANCE_CODE
+        ,START_DATE
+        ,END_DATE
+        ,CREDIT_GRADE_CODE
+        ,CV_SIZE
+        ,TAX_NO
+        ,SALES_AMOUNT
+        ,EMP_COUNT
+        ,ITEMS
+        ,DESCRIPTION
+        ,ATTRIBUTE1
+        ,REVERSE_YN
+        ,EXTRA_SYS_YN
+        ,UP_COMM_CV_PSJ_ID
+        FROM COMM_CV_PSJ
+        WHERE 1=1
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(v_comm_cv_psj_id)">
+            AND COMM_CV_PSJ_ID = nvl(#{v_comm_cv_psj_id}, comm_cv_psj_id)
+        </if>
+        <if test="v_cv_name != null and v_cv_name != '' and v_cv_name != '%'.toString()">
+            AND  CV_NAME like '%' || #{v_cv_name} || '%'
+        </if>
+        <if test="v_business_no != null and v_business_no != '' and v_business_no != '%'.toString()">
+            AND  BUSINESS_NO like '%' || #{v_business_no} || '%'
+        </if>
+        <if test="v_purchase_tax_code != null and v_purchase_tax_code != '' and v_purchase_tax_code != '%'.toString()">
+            AND  PURCHASE_TAX_CODE like '%' || #{v_purchase_tax_code} || '%'
+        </if>
+        <if test="v_cv_type_code != null and v_cv_type_code != '' and v_cv_type_code != '%'.toString()">
+            AND  CV_TYPE_CODE like '%' || #{v_cv_type_code} || '%'
+        </if>
+    </select>
+    	<!-- ******************************************* -->
+	<!-- 년도별 평가구분등록 -->
+	<!-- ******************************************* -->
+	<select id="S_EV_BI_DIVISION" parameterType="hashmap" resultType="hashmap">
+		SELECT ebd.ev_bi_division_id
+			  ,nvl(ebd.ev_bi_std_id, #{v_ev_bi_std_id})			as ev_bi_std_id
+			  ,nvl(ebd.division_type_code, ccd.code_detail)     as division_type_code
+			  ,ebd.division_name
+			  ,ebd.start_date
+			  ,ebd.end_date
+			  ,ebd.method_type_code
+		      ,ebd.max_rev
+			  ,ebd.self_yn
+			  ,ebd.reference_yn
+			  ,ebd.close_yn
+			  ,ebd.description
+			  ,ebd.crtby
+			  ,ebd.crtdt
+			  ,ebd.crtip
+			  ,ebd.amnby
+			  ,ebd.amndt
+			  ,ebd.amnip
+		 FROM ev_bi_division           ebd
+		RIGHT JOIN comm_mu_code_detail ccd  ON ebd.division_type_code  = ccd.code_detail
+										   AND ebd.ev_bi_std_id        = #{v_ev_bi_std_id}
+		WHERE 1=1
+		  AND ccd.comm_corporation_id = #{v_corporation_id}
+		  AND ccd.code_master         = 'ev011'
+		  AND ccd.use_yn              = '1'
+  	    ORDER BY ccd.sort_seq
+	</select>
+
+	<!-- 평가구분 저장 -->
+	<update id="P_EV_BI_DIVISION" parameterType="hashmap">
+		MERGE INTO ev_bi_division
+		USING dual
+		   ON (ev_bi_division_id = #{EV_BI_DIVISION_ID})
+		 WHEN MATCHED THEN
+			UPDATE
+			   SET division_name    = #{DIVISION_NAME}
+				  ,start_date       = #{START_DATE}
+				  ,end_date         = #{END_DATE}
+				  ,method_type_code = #{METHOD_TYPE_CODE}
+			      ,max_rev	  	    = #{MAX_REV}
+				  ,self_yn          = #{SELF_YN}
+				  ,reference_yn     = #{REFERENCE_YN}
+				  ,close_yn         = #{CLOSE_YN}
+				  ,description      = #{DESCRIPTION}
+				  ,amnby            = #{AMNBY}
+				  ,amndt            = sysdate
+				  ,amnip            = #{AMNIP}
+		 WHEN NOT MATCHED THEN
+			INSERT (ev_bi_division_id
+				   ,ev_bi_std_id
+				   ,division_type_code
+				   ,division_name
+				   ,start_date
+				   ,end_date
+				   ,method_type_code
+				   ,max_rev
+				   ,self_yn
+				   ,reference_yn
+				   ,close_yn
+				   ,description
+				   ,crtby
+				   ,crtdt
+				   ,crtip
+				   ,amnby
+				   ,amndt
+				   ,amnip)
+			VALUES (ev_bi_division_s.nextval
+				   ,#{EV_BI_STD_ID}
+				   ,#{DIVISION_TYPE_CODE}
+				   ,#{DIVISION_NAME}
+				   ,#{START_DATE}
+				   ,#{END_DATE}
+				   ,#{METHOD_TYPE_CODE}
+				   ,#{MAX_REV}
+				   ,#{SELF_YN}
+				   ,#{REFERENCE_YN}
+				   ,#{CLOSE_YN}
+				   ,#{DESCRIPTION}
+				   ,#{CRTBY}
+				   ,sysdate
+				   ,#{CRTIP}
+				   ,#{AMNBY}
+				   ,sysdate
+				   ,#{AMNIP})
+	</update>
+
+	<!-- 평가구분별 차수관리 -->
+	<select id="S_EV_BI_DIVISION_REV" parameterType="hashmap" resultType="hashmap">
+		SELECT ev_bi_division_rev_id
+			  ,ev_bi_division_id
+			  ,rev
+			  ,revision_name
+			  ,target_start_date
+			  ,target_end_date
+			  ,start_date
+			  ,end_date
+			  ,apply_rate
+			  ,description
+			  ,crtby
+			  ,crtdt
+			  ,crtip
+			  ,amnby
+			  ,amndt
+			  ,amnip
+		  FROM ev_bi_division_rev
+		 WHERE 1=1
+		   AND ev_bi_division_id = #{v_ev_bi_division_id}
+	</select>
+
+	<insert id="I_EV_BI_DIVISION_REV_PROC" parameterType="hashmap">
+		DECLARE
+			v_table_key		number;
+		BEGIN
+			v_table_key := ev_bi_division_rev_s.nextval;
+
+			INSERT INTO ev_bi_division_rev(ev_bi_division_rev_id
+										  ,ev_bi_division_id
+										  ,rev
+										  ,revision_name
+										  ,target_start_date
+										  ,target_end_date
+										  ,start_date
+										  ,end_date
+										  ,apply_rate
+										  ,description
+										  ,crtby
+										  ,crtdt
+										  ,crtip
+										  ,amnby
+										  ,amndt
+										  ,amnip)
+									VALUES(v_table_key
+										  ,#{EV_BI_DIVISION_ID}
+										  ,(select nvl(max(rev), 0) + 1
+											from ev_bi_division_rev
+											where 1=1
+											  and ev_bi_division_id = #{EV_BI_DIVISION_ID})
+										  ,#{REVISION_NAME}
+										  ,#{TARGET_START_DATE}
+										  ,#{TARGET_END_DATE}
+										  ,#{START_DATE}
+										  ,#{END_DATE}
+										  ,#{APPLY_RATE}
+										  ,#{DESCRIPTION}
+										  ,#{CRTBY}
+										  ,sysdate
+										  ,#{CRTIP}
+										  ,#{AMNBY}
+										  ,sysdate
+										  ,#{AMNIP});
+			-- 평가자 셋팅
+			INSERT INTO ev_bi_division_evaluator(ev_bi_division_evaluator_id
+												,ev_bi_division_rev_id
+												,evaluator_type_code
+												,crtby
+												,crtdt
+												,crtip
+												,amnby
+												,amndt
+												,amnip)
+										  select EV_BI_DIVISION_REV_S.nextval
+												,v_table_key
+												,ccd.code_detail
+												,#{CRTBY}
+												,sysdate
+												,#{CRTIP}
+												,#{AMNBY}
+												,sysdate
+												,#{AMNIP}
+											from comm_mu_code_detail ccd
+										   where 1 = 1
+											 and ccd.comm_corporation_id = #{LOGIN_CORPORATION_ID}
+											 and ccd.code_master 		 = 'ev014'
+											 and ccd.use_yn 			 = '1'
+											 and ccd.attribute1 between (select decode(self_yn, '1', 0, 1)
+																		   from ev_bi_division
+																		  where 1 = 1
+																			and ev_bi_division_id = #{EV_BI_DIVISION_ID})
+																	and (select nvl(max_rev, 0)
+																		   from ev_bi_division
+																		  where 1 = 1
+																			and ev_bi_division_id = #{EV_BI_DIVISION_ID}) ;
+		END;
+	</insert>
+
+	<update id="U_EV_BI_DIVISION_REV_PROC" parameterType="hashmap">
+		UPDATE ev_bi_division_rev
+		   SET revision_name		= #{REVISION_NAME}
+			  ,target_start_date	= #{TARGET_START_DATE}
+			  ,target_end_date		= #{TARGET_END_DATE}
+			  ,start_date			= #{START_DATE}
+			  ,end_date				= #{END_DATE}
+			  ,apply_rate			= #{APPLY_RATE}
+			  ,description			= #{DESCRIPTION}
+		      ,amnby 				= #{AMNBY}
+		      ,amndt 				= sysdate
+			  ,amnip 				= #{AMNIP}
+	     WHERE 1=1
+		   AND ev_bi_division_rev_id = #{EV_BI_DIVISION_REV_ID}
+	</update>
+
+	<delete id="D_EV_BI_DIVISION_REV_PROC" parameterType="hashmap">
+		DECLARE
+		BEGIN
+			delete
+			  from ev_bi_division_evaluator
+			 where 1=1
+			   and ev_bi_division_rev_id = #{EV_BI_DIVISION_REV_ID};
+
+			delete
+			  from ev_bi_division_rev
+			 where 1=1
+  			   and ev_bi_division_rev_id = #{EV_BI_DIVISION_REV_ID};
+		END;
+	</delete>
+
+	<!-- 평가자별 반영비율 등록 -->
+	<select id="S_EV_BI_DIVISION_EVALUATOR" parameterType="hashmap" resultType="hashmap">
+		SELECT ev_bi_division_evaluator_id
+			  ,ev_bi_division_rev_id
+			  ,evaluator_type_code
+			  ,start_date
+			  ,end_date
+			  ,apply_rate
+			  ,description
+			  ,crtby
+			  ,crtdt
+			  ,crtip
+			  ,amnby
+			  ,amndt
+			  ,amnip
+		  FROM ev_bi_division_evaluator
+ 		 WHERE 1=1
+		   AND ev_bi_division_rev_id = #{v_ev_bi_division_rev_id}
+		 ORDER BY evaluator_type_code
+	</select>
+
+	<!-- ******************************************* -->
+	<!-- 년도별 평가기준정보 -->
+	<!-- ******************************************* -->
+	<select id="S_EV_STD_EVALEE" parameterType="hashmap" resultType="hashmap">
+		SELECT ev_std_evalee_id
+			  ,ev_bi_std_id
+			  ,ev_bi_division_id
+			  ,full_join_date
+			  ,part_join_date
+			  ,description
+			  ,crtby
+			  ,crtdt
+			  ,crtip
+			  ,amnby
+			  ,amndt
+			  ,amnip
+		  FROM ev_std_evalee
+		 WHERE 1=1
+		   AND ev_bi_std_id      = #{v_ev_bi_std_id}
+		   AND ev_bi_division_id = #{v_ev_bi_division_id}
+	</select>
+
+	<select id="S_EV_BI_EVALEE_HEADER" parameterType="hashmap" resultType="hashmap">
+		SELECT evh.ev_std_evalee_header_id
+			  ,evh.ev_std_evalee_id
+			  ,evh.code_master
+			  ,ccm.code_master_name
+			  ,evh.description
+			  ,evh.crtby
+			  ,evh.crtdt
+			  ,evh.crtip
+			  ,evh.amnby
+			  ,evh.amndt
+			  ,evh.amnip
+		  FROM ev_std_evalee_header     evh
+		  LEFT JOIN comm_mu_code_master ccm  ON ccm.comm_corporation_id = #{v_corporation_id}
+											AND evh.code_master         = ccm.code_master
+											AND ccm.use_yn				= '1'
+		 WHERE 1=1
+		   AND ev_std_evalee_id = #{v_ev_std_evalee_id}
+	</select>
+
+	<select id="S_EV_BI_EVALEE_DETAIL" parameterType="hashmap" resultType="hashmap">
+		SELECT evd.ev_std_evalee_detail_id
+			  ,nvl(evd.ev_std_evalee_id, #{v_ev_std_evalee_id}) 	as ev_std_evalee_id
+			  ,nvl(evd.code_master, ccd.code_master)            	as code_master
+			  ,nvl(evd.code_detail, ccd.code_detail)            	as code_detail
+		      ,comm_util_pkg.wrk_code_name(ccd.comm_corporation_id
+		                                  ,ccd.code_master
+		         						  ,ccd.code_detail
+		         						  ,#{v_lang_code})			as code_name
+			  ,evd.except_yn
+			  ,evd.description
+			  ,evd.crtby
+			  ,evd.crtdt
+			  ,evd.crtip
+			  ,evd.amnby
+			  ,evd.amndt
+			  ,evd.amnip
+		  FROM ev_std_evalee_detail     evd
+		 RIGHT JOIN comm_mu_code_detail ccd  ON evd.code_master      = ccd.code_master
+											AND evd.code_detail      = ccd.code_detail
+											AND evd.ev_std_evalee_id = #{v_ev_std_evalee_id}
+		 WHERE 1=1
+		   AND ccd.comm_corporation_id = #{v_corporation_id}
+		   AND ccd.code_master         = #{v_code_master}
+		   AND ccd.use_yn              = '1'
+		 ORDER BY ccd.sort_seq
+	</select>
+
+	<insert id="I_EV_STD_EVALEE_HEADER_PROC" parameterType="hashmap">
+		INSERT INTO ev_std_evalee_header(ev_std_evalee_header_id
+										,ev_std_evalee_id
+										,code_master
+										,description
+										,crtby
+										,crtdt
+										,crtip
+										,amnby
+										,amndt
+										,amnip)
+								  VALUES(ev_std_evalee_header_s.nextval
+								  	    ,#{EV_STD_EVALEE_ID}
+								  	    ,#{CODE_MASTER}
+								  	    ,#{DESCRIPTION}
+								  	    ,#{CRTBY}
+								  	    ,sysdate
+								  	    ,#{CRTIP}
+								  	    ,#{AMNBY}
+								  	    ,sysdate
+								  	    ,#{AMNIP})
+	</insert>
+
+	<update id="U_EV_STD_EVALEE_HEADER_PROC" parameterType="hashmap">
+		UPDATE ev_std_evalee_header
+		   SET code_master             = #{CODE_MASTER}
+		      ,description             = #{DESCRIPTION}
+		      ,amnby                   = #{AMNBY}
+		      ,amndt                   = sysdate
+		      ,amnip                   = #{AMNIP}
+		 WHERE ev_std_evalee_header_id = #{EV_STD_EVALEE_HEADER_ID}
+	</update>
+
+	<delete id="D_EV_STD_EVALEE_HEADER_PROC" parameterType="hashmap">
+		DECLARE
+		BEGIN
+			delete
+		      from ev_std_evalee_detail
+			 where 1=1
+			   and exists(select 'Y'
+			       			from ev_std_evalee_header a
+			       		   where 1=1
+			        	     and ev_std_evalee_header_id = #{EV_STD_EVALEE_HEADER_ID}
+			       			 and code_master			 = a.code_master);
+
+			delete
+			  from ev_std_evalee_header
+			 where 1=1
+			   and ev_std_evalee_header_id = #{EV_STD_EVALEE_HEADER_ID};
+		END;
+	</delete>
+    
+
+    <update id="U_COMM_CV_PSJ_PROC" parameterType="hashmap">
+        UPDATE COMM_CV_PSJ
+        SET  COMM_CORPORATION_ID		=#{COMM_CORPORATION_ID}
+          ,CV_NAME				        =#{CV_NAME}
+          ,CV_NAME_ABBR			        =#{CV_NAME_ABBR}
+          ,CV_NAME_EN			    	=#{CV_NAME_EN}
+          ,CV_TYPE_CODE			        =#{CV_NAME_EN}
+          ,BUSINESS_NO			        =replace(#{BUSINESS_NO}, '-', '')
+          ,REPRESENTATIVE			    =#{REPRESENTATIVE}
+          ,BUSINESS_TYPE			    =#{BUSINESS_TYPE}
+          ,BUSINESS_ITEM			    =#{BUSINESS_ITEM}
+          ,NATION_CODE			        =#{NATION_CODE}
+          ,ESTABLISHMENT_NO		        =#{ESTABLISHMENT_NO}
+          ,USE_YN					    =#{USE_YN}
+          ,TEL					        =#{TEL}
+          ,FAX					        =#{FAX}
+          ,HOMEPAGE				        =#{HOMEPAGE}
+          ,POST_NO				        =#{POST_NO}
+          ,ADDRESS				        =#{ADDRESS}
+          ,PURCHASE_YN			        =#{PURCHASE_YN}
+          ,PURCHASE_TAX_CODE		    =#{PURCHASE_TAX_CODE}
+          ,PURCHASE_TERMS_ID		    =#{PURCHASE_TERMS_ID}
+          ,SALES_YN				        =#{SALES_YN}
+          ,SALES_TAX_CODE			    =#{SALES_TAX_CODE}
+          ,SALES_TERMS_ID			    =#{SALES_TERMS_ID}
+          ,OLD_CV_CODE			        =#{OLD_CV_CODE}
+          ,HR_EMPLOYEE_MASTER_ID	    =#{HR_EMPLOYEE_MASTER_ID}
+          ,IMPORTANCE_CODE		        =#{IMPORTANCE_CODE}
+          ,START_DATE			    	=#{START_DATE}
+          ,END_DATE				        =#{END_DATE}
+          ,CREDIT_GRADE_CODE	    	=#{CREDIT_GRADE_CODE}
+          ,CV_SIZE				        =#{CV_SIZE}
+          ,TAX_NO				    	=#{TAX_NO}
+          ,SALES_AMOUNT			        =#{SALES_AMOUNT}
+          ,EMP_COUNT			    	=#{EMP_COUNT}
+          ,ITEMS				    	=#{ITEMS}
+          ,DESCRIPTION			        =#{DESCRIPTION}
+          ,ATTRIBUTE1				    =#{ATTRIBUTE1}
+          ,REVERSE_YN				    =#{REVERSE_YN}
+          ,EXTRA_SYS_YN			        =#{EXTRA_SYS_YN}
+          ,AMNBY				    	=#{AMNBY}
+          ,AMNDT					    =SYSDATE
+          ,AMNIP					    =#{AMNIP}
+          ,UP_COMM_CV_PSJ_ID		    =#{UP_COMM_CV_ID}
+        WHERE COMM_CV_PSJ_ID =          #{COMM_CV_PSJ_ID}
+
+    </update>
+
+    <select id="S_COMM_CV_REVISION_PSJ_PROC" parameterType="hashmap" resultType="hashmap">
+        select comm_cv_revision_psj_id
+             ,comm_cv_psj_id
+             ,seq
+             ,fn_char(revision_date)		as revision_date
+             ,r_cv_name
+             ,r_cv_name_abbr
+             ,comm_cv_pkg.format_business_no(r_business_no) AS r_business_no
+             ,r_representative
+             ,r_business_type
+             ,r_business_item
+             ,r_post_no
+             ,r_address
+             ,description
+             ,attribute1
+             ,attribute2
+             ,attribute3
+             ,attribute4
+             ,attribute5
+             ,crtby
+             ,crtdt
+             ,crtip
+             ,amnby
+             ,amndt
+             ,amnip
+        from comm_cv_revision_psj
+        where 1=1
+          and comm_cv_psj_id = #{v_comm_cv_psj_id}
+
+    </select>
+
+    <update id="P_COMM_CV_REVISION_PSJ_PROC" parameterType="hashmap">
+        BEGIN
+        MERGE INTO comm_cv_revision_psj ccrp
+            USING dual
+            ON (ccrp.comm_cv_revision_psj_id = #{COMM_CV_REVISION_PSJ_ID})
+            WHEN MATCHED THEN
+                UPDATE
+                    SET  ccrp.r_cv_name = #{R_CV_NAME}
+                        ,ccrp.r_cv_name_abbr = #{R_CV_NAME_ABBR}
+                        ,ccrp.r_business_no  = replace(#{R_BUSINESS_NO}, '-', '')
+                        ,ccrp.r_representative = #{R_REPRESENTATIVE}
+                        ,ccrp.r_business_type = #{R_BUSINESS_TYPE}
+                        ,ccrp.r_business_item = #{R_BUSINESS_ITEM}
+                        ,ccrp.r_post_no = #{R_POST_NO}
+                        ,ccrp.r_address  = #{R_ADDRESS}
+                        ,ccrp.description = #{DESCRIPTION}
+                        ,ccrp.amnby = #{AMNBY}
+                        ,ccrp.amndt = #{AMNDT}
+                        ,ccrp.amnip = #{AMNIP}
+            WHEN NOT MATCHED THEN
+                INSERT
+                    (ccrp.comm_cv_revision_psj_id
+                        ,ccrp.comm_cv_psj_id
+                        ,ccrp.seq
+                        ,ccrp.revision_date
+                        ,ccrp.r_cv_name
+                        ,ccrp.r_cv_name_abbr
+                        ,ccrp.r_business_no
+                        ,ccrp.r_representative
+                        ,ccrp.r_business_type
+                        ,ccrp.r_business_item
+                        ,ccrp.r_post_no
+                        ,ccrp.r_address
+                        ,ccrp.description
+                        ,ccrp.crtby
+                        ,ccrp.crtdt
+                        ,ccrp.crtip
+                        ,ccrp.amnby
+                        ,ccrp.amndt
+                        ,ccrp.amnip)
+                    VALUES
+                    (COMM_CV_REVISION_PSJ_S.nextval
+                        ,#{COMM_CV_PSJ_ID}
+                        ,#{SEQ}
+                        ,#{REVISION_DATE}
+                        ,#{R_CV_NAME}
+                        ,#{R_CV_NAME_ABBR}
+                        ,replace(#{R_BUSINESS_NO}, '-', '')
+                        ,#{R_REPRESENTATIVE}
+                        ,#{R_BUSINESS_TYPE}
+                        ,#{R_BUSINESS_ITEM}
+                        ,#{R_POST_NO}
+                        ,#{R_ADDRESS}
+                        ,#{DESCRIPTION}
+                        ,#{CRTBY}
+                        ,SYSDATE
+                        ,#{CRTIP}
+                        ,#{AMNBY}
+                        ,SYSDATE
+                        ,#{AMNIP});
+
+        UPDATE COMM_CV_PSJ
+        SET 	CV_NAME             = #{R_CV_NAME}
+          ,cv_name_abbr             = #{R_CV_NAME_ABBR}
+          ,business_no              = replace(#{R_BUSINESS_NO}, '-', '')
+          ,representative           = #{R_REPRESENTATIVE}
+          ,business_type            = #{R_BUSINESS_TYPE}
+          ,business_item            = #{R_BUSINESS_ITEM}
+          ,post_no                  = #{R_POST_NO}
+          ,address                  = #{R_ADDRESS}
+          ,description              = #{DESCRIPTION}
+          ,amnby                    = #{AMNBY}
+          ,amndt                    = SYSDATE
+          ,amnip                    = #{AMNIP}
+        WHERE comm_cv_psj_id = #{COMM_CV_PSJ_ID};
+        END;
+
+    </update>
+
+    <!-- ******************************************* -->
+    <!-- 거래처등록 Update				 			 -->
+    <!-- ******************************************* -->
+    <update id="U_COMM_CV_PSJ2_PROC" parameterType="hashmap">
+        UPDATE comm_cv_psj
+        SET comm_corporation_id	        =#{COMM_CORPORATION_ID}
+          ,cv_name				        =#{CV_NAME}
+          ,cv_name_abbr			        =#{CV_NAME_ABBR}
+          ,cv_name_en				    =#{CV_NAME_EN}
+          ,cv_type_code			        =#{CV_TYPE_CODE}
+          ,business_no		        	=replace(#{BUSINESS_NO}, '-', '')
+          ,representative			    =#{REPRESENTATIVE}
+          ,business_type			    =#{BUSINESS_TYPE}
+          ,business_item			    =#{BUSINESS_ITEM}
+          ,nation_code			        =#{NATION_CODE}
+          ,establishment_no		        =#{ESTABLISHMENT_NO}
+          ,use_yn					    =#{USE_YN}
+          ,tel					        =#{TEL}
+          ,fax					        =#{FAX}
+          ,homepage				        =#{HOMEPAGE}
+          ,post_no				        =#{POST_NO}
+          ,address				        =#{ADDRESS}
+          ,purchase_yn			        =#{PURCHASE_YN}
+          ,purchase_tax_code		    =#{PURCHASE_TAX_CODE}
+          ,purchase_terms_id		    =#{PURCHASE_TERMS_ID}
+          ,sales_yn				        =#{SALES_YN}
+          ,sales_tax_code			    =#{SALES_TAX_CODE}
+          ,sales_terms_id			    =#{SALES_TERMS_ID}
+          ,old_cv_code			        =#{OLD_CV_CODE}
+          ,hr_employee_master_id	    =#{HR_EMPLOYEE_MASTER_ID}
+          ,importance_code		        =#{IMPORTANCE_CODE}
+          ,start_date			    	=#{START_DATE}
+          ,end_date				        =#{END_DATE}
+          ,credit_grade_code		    =#{CREDIT_GRADE_CODE}
+          ,cv_size				        =#{CV_SIZE}
+          ,tax_no					    =#{TAX_NO}
+          ,sales_amount			        =#{SALES_AMOUNT}
+          ,emp_count				    =#{EMP_COUNT}
+          ,items					    =#{ITEMS}
+          ,description			        =#{DESCRIPTION}
+          ,attribute1				    =#{ATTRIBUTE1}
+          ,reverse_yn				    =#{REVERSE_YN}
+          ,extra_sys_yn			        =#{EXTRA_SYS_YN}
+          ,amnby					    =#{AMNBY}
+          ,amndt			            =SYSDATE
+          ,amnip		    	        =#{AMNIP}
+          ,up_comm_cv_psj_id			=#{UP_COMM_CV_PSJ_ID}
+    WHERE comm_cv_psj_id 				=#{COMM_CV_PSJ_ID}
+    </update>
+
+
+</mapper>
